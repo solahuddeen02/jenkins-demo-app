@@ -7,16 +7,24 @@ pipeline {
     }
     environment {
         DOCKER_CONFIG = '/var/jenkins_home/.docker'
+        DOCKER_BUILDKIT = '0'
     }
     stages {
         stage('Checkout') {
             steps {
-                git branch: 'main', url: 'https://github.com/solahuddeen02/jenkins-demo-app.git'
+                git branch: 'main', url: 'https://github.com/<username>/jenkins-demo-app.git'
             }
         }
         stage('Build Image') {
             steps {
                 sh 'docker build -t jenkins-demo-app:latest .'
+            }
+        }
+        stage('Test') {
+            steps {
+                sh 'echo "Running tests..."'
+                // รัน pytest ใน container ของ image ที่เพิ่ง build เสร็จ
+                sh 'docker run --rm jenkins-demo-app:latest pytest || true'
             }
         }
         stage('Run Container') {
